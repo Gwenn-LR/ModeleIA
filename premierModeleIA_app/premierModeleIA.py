@@ -4,6 +4,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
+PATH = "premierModeleIA_app/static/Data_Reg/"
+
 def chargementDonnees(nomFichier):
 
     """
@@ -29,10 +31,8 @@ def chargementDonnees(nomFichier):
 
     regSimple = pd.read_csv(nomFichier)
 
-    print(regSimple.info())
-    print(regSimple.describe())
-
-    # n = len(regSimple.columns)
+    # print(regSimple.info())
+    # print(regSimple.describe())
 
     xColonne = regSimple.head().columns[0:-1]
     yColonne = regSimple.head().columns[-1]
@@ -113,18 +113,12 @@ def decoupageDonneesAleatoires (X, Y, pourcentage):
 
     """
 
-    #TODO: Faire le découpage après le prétraitement
-
     nLignes = len(X.values)
-
-    # (nLignes, nColonnes) = X.shape
 
     if len(X.shape) == 2:
         nColonnes = X.shape[1]
     else:
         nColonnes = 1
-
-    # nColonnes = len(X.columns)
 
     indexTrainTest= list(range(nLignes))
 
@@ -144,14 +138,14 @@ def decoupageDonneesAleatoires (X, Y, pourcentage):
 
     return Xtrain, Ytrain, Xtest, Ytest
 
-def coefficientInit(Xones, Ytrain):
+def coefficientInit(Xtrain, Ytrain):
     """
     [Description]
         Retourne une première approximation du coefficient du modèle.
 
     Paramètres
     ----------
-    Xones, Ytrain : np.array
+    Xtrain, Ytrain : np.array
         Les tableaux permettant d'effectuer une première approche du coefficient de la régression
     
 
@@ -165,13 +159,13 @@ def coefficientInit(Xones, Ytrain):
 
     """
 
-    if len(Xones[0]) == 1:
-        a = (Ytrain[-1]-Ytrain[0])/(Xones[-1]-Xones[0])
-        b = Ytrain[0] - a*Xones[0]
+    if len(Xtrain[0]) == 1:
+        a = (Ytrain[-1]-Ytrain[0])/(Xtrain[-1]-Xtrain[0])
+        b = Ytrain[0] - a*Xtrain[0]
         theta = np.array([a, b])
     else :
-        n = len(Xones[0])
-        Xones = ecritureMatricielleSysEqu(Xones[0:n, :])
+        n = len(Xtrain[0])
+        Xones = ecritureMatricielleSysEqu(Xtrain[0:n, :])
         XtrainPlus = np.linalg.pinv(Xones)
         theta = XtrainPlus.dot(Ytrain[0:n]) + (np.identity(n+1) - XtrainPlus.dot(Xones)).dot(np.random.rand(n+1, 1))
 
@@ -242,15 +236,15 @@ def ecritureXPoly(X, degre):
 
     Paramètres
     ----------
-    X : np.array
-        Le tableau à convertir pour effectuer la régression polynomiale.
+    X : pd.DataFrame
+        Le dataframe à convertir pour effectuer la régression polynomiale.
     degre : int
         La valeur du degré de la régression polynomiale.
 
     Returns
     -------
-    Xpoly : np.array
-        Tableau pour effectuer la régression polynomiale.
+    Xpoly : pd.DataFrame
+        Dataframe pour effectuer la régression polynomiale.
 
     Raises
     ------
@@ -292,7 +286,6 @@ def gradient(Xtrain, Ytrain, theta):
 
     n = len(Xtrain)
     Xones = ecritureMatricielleSysEqu(Xtrain)
-    # dtheta = 1/n * (np.transpose(Xones)).dot(Xones.dot(theta)-Ytrain)
     dtheta = 1/n * (np.transpose(Xones)).dot(Xones.dot(theta)-Ytrain)
 
     return dtheta
@@ -367,6 +360,8 @@ def modele(X, Y, alpha, n, modele, degre):
 
     """
 
+    global dataName
+
     if modele == "polynomial":
         degre = int(degre)
         X = ecritureXPoly(X, degre)
@@ -378,6 +373,11 @@ def modele(X, Y, alpha, n, modele, degre):
     theta, couts = descenteGradient(Xtrain, Ytrain, theta, alpha, n)
 
     plt.plot(couts)
+    plt.title("Coût en fonction des itérations")
+    plt.xlabel("Itérations")
+    plt.ylabel("Coût")
+    nomFigure = f"{dataName} - alpha{str(alpha)} - N{n} - Fonction coût"
+    plt.savefig(nomFigure.replace(".", "_"))
     plt.show()
 
     return Xtrain, Ytrain, Xtest, Ytest, theta
@@ -404,14 +404,14 @@ def prediction(Xtest, theta):
 
     return ecritureMatricielleSysEqu(Xtest).dot(theta)
 
-def coeffDetermination(Xtest, Ytest, Ypred):
+def coeffDetermination(Ytest, Ypred):
     """
     [Description]
         Retourne la valeur du coefficient de Pearson.
 
     Paramètres
     ----------
-    Xtest, Ytest, Ypred : np.array
+    Ytest, Ypred : np.array
         Les tableaux utilisé pour évaluer le modèle.
     
     Returns
@@ -423,7 +423,7 @@ def coeffDetermination(Xtest, Ytest, Ypred):
     ------
 
     """
-    n = len(Xtest)
+    n = len(Ytest)
 
     sommeVariance = 0
     moyenneCarreResiduts = 0
@@ -437,18 +437,43 @@ def coeffDetermination(Xtest, Ytest, Ypred):
 
     return R    
 
+def errQuadMoyenne(Ytest, Ypred):
+    """
+    [Description]
+        Retourne la valeur de l'erreur quadratique moyenne.
+
+    Paramètres
+    ----------
+    Ytest, Ypred : np.array
+        Les tableaux utilisé pour évaluer le modèle.
+    
+    Returns
+    -------
+    mSE : float
+        L'erreur quadratique moyenne de la prédiction.'
+
+    Raises
+    ------
+
+    """
+    mSE = mean_squared_error(Ytest, Ypred)
+
+    return mSE
+
 if __name__ == "__main__":
-    alpha = 9e-1
-    n = 50
+    alpha = 5e-1
+    n = 100
     degre = 6
 
     '''
     Décommentez la ligne correspondante aux données souhaitées.
     '''
-    # X, Y = chargementDonnees("premierModeleIA_app/static/Data_Reg/reg_simple.csv")
-    # X, Y = chargementDonnees("premierModeleIA_app/static/Data_Reg/boston_house_prices.csv")
-    X, Y = chargementDonnees("premierModeleIA_app/static/Data_Reg/Position_Salaries.csv")
-    
+    # dataName = "reg_simple.csv"
+    # dataName = "boston_house_prices.csv"
+    dataName = "Position_Salaries.csv"
+
+    dataNamePath = PATH + dataName
+    X, Y = chargementDonnees(dataNamePath)
     X = pretraitementDonnees(X)
     Y = pretraitementDonnees(Y)
 
@@ -457,7 +482,7 @@ if __name__ == "__main__":
     '''
     # Xtrain, Ytrain, Xtest, Ytest, theta = modele(X, Y, alpha, n, "simple linéaire", degre)
     # Xtrain, Ytrain, Xtest, Ytest, theta = modele(X[["RM", "LSTAT"]], Y, alpha, n, "multiple linéaire", degre)
-    Xtrain, Ytrain, Xtest, Ytest, theta = modele(X["Level"], Y, alpha, n, "polynomial", degre)
+    # Xtrain, Ytrain, Xtest, Ytest, theta = modele(X["Level"], Y, alpha, n, "polynomial", degre)
 
     Ypred = prediction(Xtest, theta)
 
@@ -466,24 +491,46 @@ if __name__ == "__main__":
     '''
     # plt.scatter(Xtrain, Ytrain)
     # plt.scatter(Xtest, Ytest)
-    # plt.plot(Xtest, Ypred)
+    # plt.plot(X, prediction(X, theta))
+    # plt.title("Note en fonction du temps passé à réviser")
+    # plt.xlabel("Temps passé à réviser")
+    # plt.ylabel("Note obtenue")
+    # plt.legend(["entraînement", "test", "prédiction"])
 
     '''
     Décommentez ce paragraphe pour afficher les résultats du deuxième modèle
     '''
     # ax = plt.axes(projection="3d")
     # ax.scatter(Xtest[:, 0], Xtest[:, 1],  Ytest)
-    # ax.scatter(Xtest[:, 0], Xtest[:, 1], Ypred)
+    # ax.scatter(Xtest[:, 0], Xtest[:, 1],  Ypred)
+    # ax.set_title("Régression multiple")
+    # ax.set_xlabel("RM")
+    # ax.set_ylabel("LSTAT")
+    # ax.set_zlabel("MEDV")
+    # ax.view_init(45, 180)
+    # plt.legend(["test", "prédiction"])
+    
 
     '''
     Décommentez ce paragraphe pour afficher les résultats du troisième modèle
     '''
-    plt.scatter(Xtrain[:, -2],  Ytrain)
-    plt.scatter(Xtest[:, -2], Ypred)
-    plt.plot(Xtest[:, -2], Ypred)
+    # plt.scatter(Xtrain[:, -2],  Ytrain)
+    # plt.scatter(Xtest[:, -2], Ytest)
+    # plt.plot(X["Level"].values.reshape(-1,1), prediction(ecritureXPoly(X["Level"], degre), theta))
+    # plt.title(f"Régression polynomiale de degré {degre}")
+    # plt.xlabel("Level")
+    # plt.ylabel("Salary")
+    # plt.legend(["entraînement", "test", "prédiction"])
 
-    plt.show()
+    '''
+    Si vous souhaitez enregistrer une figure, n'oubliez pas de décommenter ce paragraphe
+    '''
+    # nomFigure = f"{dataName} - alpha{str(alpha)} - N{n} - Prédiction"
+    # plt.savefig(nomFigure.replace(".", "_"))
+    # plt.show()
 
-    R = coeffDetermination(Xtest, Ytest, Ypred)
-    print(mean_squared_error(Ytest, Ypred))
-    print(R)
+    '''
+    Si vous souhaitez afficher les coefficients d'erreur, n'oubliez de décommenter ce paragraphe'''
+    # R = coeffDetermination(Ytest, Ypred)
+    # print(errQuadMoyenne(Ytest, Ypred))
+    # print(R)

@@ -35,19 +35,20 @@
   - [x] Evaluer votre modèle en utilisant le coefficient de détermination
     - Récupération des valeurs à tester
     - Création de la fonction coefDetermination(X_train, Y_train)
-  - [ ] Tracer la courbe de la fonction du coût selon les itérations
+  - [x] Tracer la courbe de la fonction du coût selon les itérations
     - Création fonction coutIterations
     - Affichage selon plusieurs valeurs
 
 >
 - <div id="2"> Régression linéaire multiple</div>
 
-  - [ ] Implémentez un modèle de régression multiple sur la base de données issue du fichier nommé boston_house_prices.csv (sans utiliser la bibliothèque Scikit-learn).
+  - [x] Implémentez un modèle de régression multiple sur la base de données issue du fichier nommé boston_house_prices.csv (sans utiliser la bibliothèque Scikit-learn).
      - Chargement des fichiers
      - Découpage des données en test/train
      - Affichage de la courbe
-     - Création de la fonction modeleLinMulti()
-  - [ ] Évaluez les résultats obtenus en utilisant la fonction mean_squared_error de sklearn
+     - ~~Création de la fonction modeleLinMulti()~~
+     - Utilisation de la fonction de création de modèle
+  - [x] Évaluez les résultats obtenus en utilisant la fonction mean_squared_error de sklearn
     - Importation de sklearn
     - Création de la fonction errQuadMoyenne(X_train, Y_train)
 
@@ -56,14 +57,15 @@
 - <div id="3"> Régression polynomiale</div>
 
 
-  - [ ] En utilisant les bibliothèques adéquates de Python, implémentez un modèle de régression polynomiale sur le jeu de données issu du fichier **Position_Salaire.csv **(sans utiliser la bibliothèque Scikit-learn).
+  - [x] En utilisant les bibliothèques adéquates de Python, implémentez un modèle de régression polynomiale sur le jeu de données issu du fichier **Position_Salaire.csv **(sans utiliser la bibliothèque Scikit-learn).
      - Chargement des fichiers
      - Découpage des données en test/train
      - Affichage de la courbe
-     - Création de la fonction modelePoly()
-  - [ ] Appliquez le même modèle sur le jeu de données issu du fichier data/qualite_vin_rouge.csv
+     - ~~Création de la fonction modelePoly()~~
+     - Utilisation de la fonction de création de modèle
+  - [x] Appliquez le même modèle sur le jeu de données issu du fichier data/qualite_vin_rouge.csv
     - Utilisation de la fonction modelePoly()
-  - [ ] Évaluez votre modèle.
+  - [x] Évaluez votre modèle.
     - Utilisation de la fonction coeffDetermination
     - Utilisation de la fonction errQuadMoyenne
 
