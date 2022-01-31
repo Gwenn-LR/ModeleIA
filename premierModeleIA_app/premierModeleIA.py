@@ -435,7 +435,7 @@ def coeffDetermination(Ytest, Ypred):
 
     R = 1 - sommeVariance/moyenneCarreResiduts 
 
-    return R    
+    return R[0]   
 
 def errQuadMoyenne(Ytest, Ypred):
     """
@@ -468,9 +468,9 @@ if __name__ == "__main__":
     '''
     Décommentez la ligne correspondante aux données souhaitées.
     '''
-    # dataName = "reg_simple.csv"
+    dataName = "reg_simple.csv"
     # dataName = "boston_house_prices.csv"
-    dataName = "Position_Salaries.csv"
+    # dataName = "Position_Salaries.csv"
 
     dataNamePath = PATH + dataName
     X, Y = chargementDonnees(dataNamePath)
@@ -480,7 +480,7 @@ if __name__ == "__main__":
     '''
     Décommentez la ligne associée au modèle souhaité.
     '''
-    # Xtrain, Ytrain, Xtest, Ytest, theta = modele(X, Y, alpha, n, "simple linéaire", degre)
+    Xtrain, Ytrain, Xtest, Ytest, theta = modele(X, Y, alpha, n, "simple linéaire", degre)
     # Xtrain, Ytrain, Xtest, Ytest, theta = modele(X[["RM", "LSTAT"]], Y, alpha, n, "multiple linéaire", degre)
     # Xtrain, Ytrain, Xtest, Ytest, theta = modele(X["Level"], Y, alpha, n, "polynomial", degre)
 
@@ -489,13 +489,13 @@ if __name__ == "__main__":
     '''
     Décommentez ce paragraphe pour afficher les résultats du premier modèle
     '''
-    # plt.scatter(Xtrain, Ytrain)
-    # plt.scatter(Xtest, Ytest)
-    # plt.plot(X, prediction(X, theta))
-    # plt.title("Note en fonction du temps passé à réviser")
-    # plt.xlabel("Temps passé à réviser")
-    # plt.ylabel("Note obtenue")
-    # plt.legend(["entraînement", "test", "prédiction"])
+    plt.scatter(Xtrain, Ytrain)
+    plt.scatter(Xtest, Ytest)
+    plt.plot(X, prediction(X, theta))
+    plt.title("Note en fonction du temps passé à réviser")
+    plt.xlabel("Temps passé à réviser")
+    plt.ylabel("Note obtenue")
+    plt.legend(["entraînement", "test", "prédiction"])
 
     '''
     Décommentez ce paragraphe pour afficher les résultats du deuxième modèle
@@ -531,6 +531,6 @@ if __name__ == "__main__":
 
     '''
     Si vous souhaitez afficher les coefficients d'erreur, n'oubliez de décommenter ce paragraphe'''
-    # R = coeffDetermination(Ytest, Ypred)
-    # print(errQuadMoyenne(Ytest, Ypred))
-    # print(R)
+    # R2 = coeffDetermination(Ytest, Ypred)
+    # print("MSE=" + str(errQuadMoyenne(Ytest, Ypred)))
+    # print("R2=" + str(R2))
