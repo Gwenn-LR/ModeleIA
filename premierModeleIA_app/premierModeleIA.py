@@ -433,9 +433,9 @@ def coeffDetermination(Ytest, Ypred):
         sommeVariance += (Ytest[i]-Ypred[i])**2
         moyenneCarreResiduts += (Ytest[i]-yMean)**2
 
-    R = 1 - sommeVariance/moyenneCarreResiduts 
+    R2 = 1 - sommeVariance/moyenneCarreResiduts 
 
-    return R[0]   
+    return R2   
 
 def errQuadMoyenne(Ytest, Ypred):
     """
